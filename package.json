@@ -13,6 +13,9 @@
     "constraints",
     "computed"
   ],
+  "scripts": {
+    "test": "node ./node_modules/gulp/bin/gulp.js test"
+  },
   "author": "Jonathan Skeate",
   "license": "MIT",
   "readmeFilename": "README.md",
