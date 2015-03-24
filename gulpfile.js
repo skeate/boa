@@ -15,7 +15,8 @@ gulp.task('dev', function() {
 
 gulp.task('test', function(done) {
   karma.start({
-    configFile: __dirname + '/karma.conf.js',
+    configFile: __dirname + '/karma.conf' +
+      (process.env.CI ? '-ci' : '') + '.js',
     singleRun: true
   }, function() {
     done();
