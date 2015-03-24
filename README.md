@@ -1,3 +1,7 @@
+![Travis CI Status](https://travis-ci.org/skeate/boa.svg?branch=master) [![Coverage Status](https://coveralls.io/repos/skeate/boa/badge.svg)](https://coveralls.io/r/skeate/boa)
+
+[![Sauce Test Status](https://saucelabs.com/browser-matrix/boa-tests.svg)](https://saucelabs.com/u/boa-tests)
+
 # boa
 
 Reactive stylesheet JS library (and eventually language).
