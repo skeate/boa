@@ -1,0 +1,33 @@
+/* Styles for boa demo
+ *
+ * Author: Jonathan Skeate
+ */
+
+ul{
+  padding-left: 0;
+}
+li{
+  list-style-type: none;
+  width: 200px;
+  height: 50px;
+  line-height: 50px;
+  text-align: center;
+  background: #accede;
+  margin: 1rem;
+  margin-left: 50px;
+}
+
+li.selected{
+  background: #00c0de;
+}
+
+#indicator{
+  width: 0;
+  position: absolute;
+  font-size: 0;
+  border: 25px solid transparent;
+  border-left: 25px #00c0de solid;
+  top: 0;
+  left: 25px;
+  transition: top .5s;
+}

@@ -1,0 +1,11 @@
+{
+  "libs": [
+    "browser"
+  ],
+  "loadEagerly": [
+    "src/boa.js"
+  ],
+  "plugins": {
+    "node": {}
+  }
+}

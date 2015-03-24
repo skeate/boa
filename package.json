@@ -1,0 +1,33 @@
+{
+  "name": "boa",
+  "version": "0.0.0",
+  "main": "dist/boa.min.js",
+  "description": "Reactive stylesheets",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/skeate/boa.git"
+  },
+  "keywords": ["reactive", "stylesheets", "constraints", "computed"],
+  "author": "Jonathan Skeate",
+  "license": "MIT",
+  "readmeFilename": "README.md",
+  "dependencies": {},
+  "devDependencies": {
+    "browser-sync": "^2.2.3",
+    "gulp": "^3.8.11",
+    "gulp-concat": "^2.5.2",
+    "gulp-rename": "^1.2.0",
+    "gulp-uglify": "^1.1.0",
+    "gulp-umd": "^0.1.3",
+    "karma": "^0.12.31",
+    "karma-chrome-launcher": "^0.1.7",
+    "karma-clear-screen-reporter": "0.0.1",
+    "karma-coffee-preprocessor": "^0.2.1",
+    "karma-coverage": "^0.2.7",
+    "karma-mocha": "^0.1.10",
+    "karma-mocha-reporter": "^1.0.2",
+    "karma-phantomjs-launcher": "^0.1.4",
+    "karma-sinon-chai": "^0.3.0",
+    "requirejs": "^2.1.16"
+  }
+}
