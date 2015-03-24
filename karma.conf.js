@@ -36,7 +36,7 @@ module.exports = function(config) {
   for (var l in customLaunchers) {
     customLaunchers[l].base = 'SauceLabs';
   }
-  var browsers = ['Chrome'];
+  var browsers = ['Chrome', 'Firefox'];
   var reporters = ['clear-screen', 'mocha', 'coverage'];
   if (process.env.CI === 'true') {
     browsers = Object.keys(customLaunchers);
@@ -71,7 +71,8 @@ module.exports = function(config) {
     coverageReporter: {
       reporters: [
         {type: 'text-summary'},
-        {type: 'html'}
+        {type: 'html'},
+        {type: 'lcov'}
       ]
     },
 

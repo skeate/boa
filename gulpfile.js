@@ -1,21 +1,29 @@
+'use strict';
+
 var gulp = require('gulp');
 var uglify = require('gulp-uglify');
-var concat = require('gulp-concat');
 var rename = require('gulp-rename');
 var browserSync = require('browser-sync');
 var umd = require('gulp-umd');
 var reload = browserSync.reload;
 var karma = require('karma').server;
+var coveralls = require('gulp-coveralls');
 
 gulp.task('dev', function() {
-  gulp.watch(['src/boa.js'], ['build'])
-})
+  gulp.watch(['src/boa.js'], ['build']);
+});
 
 gulp.task('test', function(done) {
   karma.start({
     configFile: __dirname + '/karma.conf.js',
     singleRun: true
-  }, done);
+  }, function() {
+    done();
+  });
+  if (process.env.CI === 'true') {
+    gulp.src('./coverage/**/lcov.info')
+      .pipe(coveralls());
+  }
 });
 
 gulp.task('test-watch', function() {
@@ -33,9 +41,9 @@ gulp.task('build', function() {
       extname: '.min.js'
     }))
     .pipe(gulp.dest('dist/'));
-})
+});
 
-gulp.task('demo', function(){
+gulp.task('demo', function() {
   browserSync({
     server: {
       baseDir: ['demo', 'dist']
@@ -43,4 +51,4 @@ gulp.task('demo', function(){
   });
   gulp.watch(['dist/**/*.js', 'demo/**/*.{html,js,css}'], reload);
   gulp.watch('src/**/*.js', ['build']);
-})
+});
