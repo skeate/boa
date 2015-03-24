@@ -28,10 +28,6 @@ module.exports = function(config) {
       browserName: 'firefox',
       platform: 'OS X 10.9'
     },
-    ie10: {
-      browserName: 'internet explorer',
-      version: '10'
-    },
     ie11: {
       browserName: 'internet explorer',
       version: '11'
@@ -44,7 +40,7 @@ module.exports = function(config) {
   var reporters = ['clear-screen', 'mocha', 'coverage'];
   if (process.env.CI === 'true') {
     browsers = Object.keys(customLaunchers);
-    reporters = ['dots', 'saucelabs'];
+    reporters = ['mocha', 'saucelabs'];
   }
   config.set({
     // base path that will be used to resolve all patterns (eg. files, exclude)
