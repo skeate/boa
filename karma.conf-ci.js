@@ -1,29 +1,11 @@
 module.exports = function(config) {
   'use strict';
   var customLaunchers = {
-    chromeWin: {
-      browserName: 'chrome',
-      platform: 'Windows 7'
-    },
-    chromeLinux: {
-      browserName: 'chrome',
-      platform: 'Linux'
-    },
     chromeOSX: {
-      browserName: 'chrome',
-      platform: 'OS X 10.9'
+      browserName: 'chrome'
     },
-    firefoxWin: {
-      browserName: 'firefox',
-      platform: 'Windows 7'
-    },
-    firefoxLinux: {
-      browserName: 'firefox',
-      platform: 'Linux'
-    },
-    firefoxOSX: {
-      browserName: 'firefox',
-      platform: 'OS X 10.9'
+    firefox: {
+      browserName: 'firefox'
     },
     ie11: {
       browserName: 'internet explorer',
