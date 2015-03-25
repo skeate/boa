@@ -27,8 +27,17 @@ var Boa = {
 
   _handleMutation: function(mutation) {
     var changedEl = mutation.target;
+    var matcherFunc = changedEl.matches ||
+    /* istanbul ignore next */ changedEl.msMatchesSelector ||
+    /* istanbul ignore next */ changedEl.mozMatchesSelector ||
+    /* istanbul ignore next */ changedEl.webkitMatchesSelector;
+    /* istanbul ignore if */
+    if (!matcherFunc) {
+      throw new Error('Boa is unsupported on this browser.');
+    }
     this._bindings.forEach(function(binding) {
-      if (changedEl.matches && changedEl.matches(binding.source.selector)) {
+      /* istanbul ignore else */
+      if (matcherFunc.call(changedEl, binding.source.selector)) {
         binding._apply(binding, changedEl);
       }
     }.bind(this));
