@@ -7,7 +7,6 @@ var browserSync = require('browser-sync');
 var umd = require('gulp-umd');
 var reload = browserSync.reload;
 var karma = require('karma').server;
-var coveralls = require('gulp-coveralls');
 
 gulp.task('dev', function() {
   gulp.watch(['src/boa.js'], ['build']);
@@ -21,10 +20,6 @@ gulp.task('test', function(done) {
   }, function() {
     done();
   });
-  if (process.env.CI === 'true') {
-    gulp.src('./coverage/**/lcov.info')
-      .pipe(coveralls());
-  }
 });
 
 gulp.task('test-watch', function() {
