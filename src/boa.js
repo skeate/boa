@@ -92,7 +92,7 @@ Boa.Binding.prototype._apply = function() {
     var rule = this.selector + '{' + this.property + ':' + value + ';}';
     var sheet = Boa._style.sheet;
     var ruleIdx = sheet.insertRule(rule, sheet.cssRules.length);
-    this.cssRule = sheet.rules[ruleIdx];
+    this.cssRule = sheet.cssRules[ruleIdx];
   }
 };
 
