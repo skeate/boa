@@ -7,4 +7,4 @@ env:
     - secure: Zp9HzkVsKKrg3t40RqZUggjQs7aqnkryhEUpFIBa8NOuMpgOw+wfuz4lb0W+KuQGBDJOxeGymXljcNhhYdu5AllAA0ZpvtkcUm5s19mCjJARSUCwWjWT0p01t+pLSzpEf5yJW3EvgRCfq2YQKkJOBSVcHw39gNaQ/xvyQKteqwg=
     - CI=true
 after_script:
-  - ./node_modules/coveralls/bin/coveralls.js < ./coverage/**/lcov.info
+  - ./node_modules/.bin/lcov-result-merger './coverage/**/lcov.info' | ./node_modules/coveralls/bin/coveralls.js

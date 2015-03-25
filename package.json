@@ -38,6 +38,7 @@
     "karma-phantomjs-launcher": "^0.1.4",
     "karma-sauce-launcher": "^0.2.10",
     "karma-sinon-chai": "^0.3.0",
+    "lcov-result-merger": "^1.0.2",
     "requirejs": "^2.1.16"
   }
 }
