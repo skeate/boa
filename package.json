@@ -22,6 +22,7 @@
   "dependencies": {},
   "devDependencies": {
     "browser-sync": "^2.2.3",
+    "codeclimate-test-reporter": "0.0.4",
     "coveralls": "^2.11.2",
     "gulp": "^3.8.11",
     "gulp-rename": "^1.2.0",

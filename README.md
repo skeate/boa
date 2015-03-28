@@ -1,4 +1,7 @@
-![Travis CI Status](https://travis-ci.org/skeate/boa.svg?branch=master) [![Coverage Status](https://coveralls.io/repos/skeate/boa/badge.svg)](https://coveralls.io/r/skeate/boa) [![Dev Status](https://david-dm.org/skeate/boa/dev-status.svg)](https://david-dm.org/skeate/boa#info=devDependencies&view=table)
+![Travis CI Status](https://travis-ci.org/skeate/boa.svg?branch=master)
+[![Coverage Status](https://coveralls.io/repos/skeate/boa/badge.svg)](https://coveralls.io/r/skeate/boa)
+[![Dev Status](https://david-dm.org/skeate/boa/dev-status.svg)](https://david-dm.org/skeate/boa#info=devDependencies&view=table)
+[![Code Climate](https://codeclimate.com/github/skeate/boa/badges/gpa.svg)](https://codeclimate.com/github/skeate/boa)
 
 [![Sauce Test Status](https://saucelabs.com/browser-matrix/boa-tests.svg)](https://saucelabs.com/u/boa-tests)
 
