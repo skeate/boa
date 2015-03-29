@@ -76,6 +76,15 @@ var Boa = {
     return sources;
   },
 
+  setProperty: function(selector, property, value) {
+    var pseudoSource = {
+      value: function() {
+        return value;
+      }
+    };
+    new Boa.Binding(pseudoSource, selector, property);
+  },
+
   source: function(selector, property) {
     var combined = selector + '.' + property;
     if (!this._sources.hasOwnProperty(combined)) {

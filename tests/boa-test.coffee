@@ -10,8 +10,8 @@ describe 'Boa', ->
     Boa._style.parentNode.should.equal document.head
   it 'should be listening for DOM mutations', (done) ->
     sinon.spy Boa, '_handleMutation'
-    div = document.createElement 'div'
     async ->
+      div = document.createElement 'div'
       document.body.appendChild div
       document.body.removeChild div
       async ->
@@ -30,6 +30,16 @@ describe 'Boa', ->
       .should.throw Error
     (-> Boa.defineProperty 'clientTop', (e) -> e.getBoundingClientRect().top)
       .should.throw Error
+  it 'should have a setProperty method', (done) ->
+    div = document.createElement 'div'
+    div.classList.add 'set-prop-test'
+    document.body.appendChild div
+    Boa.setProperty '.set-prop-test', 'color', 'red'
+    async ->
+      getComputedStyle div
+        .getPropertyValue 'color'
+        .should.equal 'rgb(255, 0, 0)'
+      done()
 
 describe 'Boa.Source', ->
   it 'should exist', ->
