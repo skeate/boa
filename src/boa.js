@@ -27,20 +27,53 @@ var Boa = {
 
   _handleMutation: function(mutation) {
     var changedEl = mutation.target;
-    var matcherFunc = changedEl.matches ||
-    /* istanbul ignore next */ changedEl.msMatchesSelector ||
-    /* istanbul ignore next */ changedEl.mozMatchesSelector ||
-    /* istanbul ignore next */ changedEl.webkitMatchesSelector;
+    this._bindings.forEach(function(binding) {
+      /* istanbul ignore else */
+      if (Boa._matches(changedEl, binding.source.selector)) {
+        binding._apply(binding, changedEl);
+      }
+    }.bind(this));
+  },
+
+  _matches: function(el, selector) {
+    if (!el) {
+      return false;
+    }
+    var matcherFunc = el.matches ||
+    /* istanbul ignore next */ el.msMatchesSelector ||
+    /* istanbul ignore next */ el.mozMatchesSelector ||
+    /* istanbul ignore next */ el.webkitMatchesSelector;
     /* istanbul ignore if */
     if (!matcherFunc) {
       throw new Error('Boa is unsupported on this browser.');
     }
-    this._bindings.forEach(function(binding) {
-      /* istanbul ignore else */
-      if (matcherFunc.call(changedEl, binding.source.selector)) {
-        binding._apply(binding, changedEl);
+    return matcherFunc.call(el, selector);
+  },
+
+  /**
+   * Finds all sources which could match a selector.
+   * For example, say you have three sources:
+   *  - #nav > li : color
+   *  - ul li : color
+   *  - .widget : color
+   * Boa.findSources('li', 'color') will return the first two sources.
+   *
+   * @param {string} selector
+   * @param {string} property
+   */
+  findSources: function(selector, property) {
+    var sources = [];
+    var key;
+    for (key in Boa._sources) {
+      var source = Boa._sources[key];
+      if (source.property !== property) {
+        continue;
       }
-    }.bind(this));
+      if (Boa._matches(document.querySelector(source.selector), selector)) {
+        sources.push(source);
+      }
+    }
+    return sources;
   },
 
   source: function(selector, property) {
@@ -63,7 +96,8 @@ var Boa = {
 };
 
 Boa.Source = function(selector, property) {
-  var pattern = /((\w+):)?(\w+)/i;
+  this._bindings = [];
+  var pattern = /((\w+):)?([\w-]+)/i;
   var parsed = pattern.exec(property);
   if (parsed) {
     this._custom = parsed[2];
@@ -73,9 +107,15 @@ Boa.Source = function(selector, property) {
   }
   this.selector = selector;
 };
+Boa.Source.prototype._applyAllBindings = function() {
+  this._bindings.forEach(function(binding) {
+    binding._apply();
+  });
+};
 Boa.Source.prototype.bindTo = function(selector, property) {
   var binding = new Boa.Binding(this, selector, property);
   Boa._bindings.push(binding);
+  this._bindings.push(binding);
   return binding;
 };
 Boa.Source.prototype.value = function() {
@@ -103,6 +143,9 @@ Boa.Binding.prototype._apply = function() {
     var ruleIdx = sheet.insertRule(rule, sheet.cssRules.length);
     this.cssRule = sheet.cssRules[ruleIdx];
   }
+  Boa.findSources(this.selector, this.property).forEach(function(source) {
+    source._applyAllBindings();
+  });
 };
 
 Boa.defineProperty('clientLeft', function(e) {

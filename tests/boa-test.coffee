@@ -92,6 +92,29 @@ describe 'Boa.Source', ->
           .getPropertyValue 'height'
           .should.equal '100px'
         done()
+    it 'should handle multiple, chained bindings', (done) ->
+      Boa.source '.test2', 'color'
+        .bindTo '.test1', 'background-color'
+      Boa.source '.test1', 'background-color'
+        .bindTo '.test2', 'background-color'
+      div3 = document.createElement 'div'
+      div3.classList.add 'test3'
+      document.body.appendChild div3
+      Boa.source '.test2', 'background-color'
+        .bindTo '.test3', 'color'
+      div2.style.color = 'red'
+      async ->
+        getComputedStyle div1
+          .getPropertyValue 'background-color'
+          .should.equal 'rgb(255, 0, 0)'
+        getComputedStyle div2
+          .getPropertyValue 'background-color'
+          .should.equal 'rgb(255, 0, 0)'
+        getComputedStyle div3
+          .getPropertyValue 'color'
+          .should.equal 'rgb(255, 0, 0)'
+        document.body.removeChild div3
+        done()
     after ->
       document.body.removeChild div1
       document.body.removeChild div2
