@@ -2,7 +2,7 @@
 'use strict';
 
 var Boa = {
-  VERSION: '0.0.1',
+  VERSION: '0.2.0',
   _bindings: [],
   _properties: {},
   _sources: {},
