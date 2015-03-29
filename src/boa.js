@@ -101,6 +101,32 @@ var Boa = {
       throw new Error('Property already exists');
     }
     this._properties[property] = func;
+  },
+
+  defineTransform: function(name, func) {
+    if (typeof name !== 'string') {
+      throw new Error('name must be a string');
+    }
+    if (typeof func !== 'function') {
+      throw new Error('func must be a function');
+    }
+    if (Boa.Source.prototype.hasOwnProperty(name)) {
+      throw new Error('transform already exists');
+    }
+    Boa.Source.prototype[name] = function() {
+      var transformedSource = new Boa.Source(this.selector, this.property);
+      transformedSource._parentSource = this;
+      transformedSource._transformArgs = arguments;
+      transformedSource.value = function() {
+        var parentValue = [this._parentSource.value()];
+        var args = Array.prototype.concat.apply(
+          parentValue,
+          this._transformArgs
+        );
+        return func.apply(this, args);
+      };
+      return transformedSource;
+    };
   }
 };
 
@@ -163,5 +189,46 @@ Boa.defineProperty('clientLeft', function(e) {
 Boa.defineProperty('clientTop', function(e) {
   return e.getBoundingClientRect().top;
 });
+
+var splitValueUnit = function(val) {
+  var value = parseFloat(val, 10);
+  var unit = val.replace(value.toString(), '');
+  return {
+    value: value,
+    unit: unit
+  };
+};
+
+var deunitify = function(f) {
+  return function(v, a) {
+    v = splitValueUnit(v);
+    if (a instanceof Boa.Source) {
+      a = splitValueUnit(a.value());
+      // not sure if this is actually necessary, seems like it outputs
+      // everything in pixels anyway
+      //if (v.unit !== a.unit) {
+        //throw new Error('Source units do not match: ' + v.unit + ', ' + a.unit);
+      //}
+      return f(v.value, a.value) + v.unit;
+    }
+    return f(v.value, a) + v.unit;
+  };
+};
+
+Boa.defineTransform('plus', deunitify(function(v, a) {
+  return v + a;
+}));
+Boa.defineTransform('minus', deunitify(function(v, a) {
+  return v - a;
+}));
+Boa.defineTransform('times', deunitify(function(v, a) {
+  return v * a;
+}));
+Boa.defineTransform('dividedBy', deunitify(function(v, a) {
+  return v / a;
+}));
+Boa.defineTransform('mod', deunitify(function(v, a) {
+  return v % a;
+}));
 
 Boa.init();

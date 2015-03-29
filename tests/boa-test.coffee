@@ -17,19 +17,6 @@ describe 'Boa', ->
       async ->
         Boa._handleMutation.should.have.been.calledTwice
         done()
-  it 'should allow custom property definitions', ->
-    Boa.defineProperty.should.exist.and.be.a 'function'
-    Boa.defineProperty
-      .should.throw Error
-    (-> Boa.defineProperty 'testProp', (e) -> e.value)
-      .should.not.throw Error
-    (-> Boa.defineProperty 'testProp', (e) -> e.value)
-      .should.throw Error
-  it 'should predefine some custom properties', ->
-    (-> Boa.defineProperty 'clientLeft', (e) -> e.getBoundingClientRect().left)
-      .should.throw Error
-    (-> Boa.defineProperty 'clientTop', (e) -> e.getBoundingClientRect().top)
-      .should.throw Error
   it 'should have a setProperty method', (done) ->
     div = document.createElement 'div'
     div.classList.add 'set-prop-test'
@@ -144,3 +131,76 @@ describe 'Boa.Binding', ->
     document.body.removeChild div1
     document.body.removeChild div2
     binding.should.be.an.instanceof Boa.Binding
+
+describe 'Custom Properties', ->
+  it 'should allow custom property definitions', ->
+    Boa.defineProperty.should.exist.and.be.a 'function'
+    Boa.defineProperty
+      .should.throw Error
+    (-> Boa.defineProperty 'testProp', (e) -> e.value)
+      .should.not.throw Error
+    (-> Boa.defineProperty 'testProp', (e) -> e.value)
+      .should.throw Error
+  it 'should predefine some custom properties', ->
+    (-> Boa.defineProperty 'clientLeft', (e) -> e.getBoundingClientRect().left)
+      .should.throw Error
+    (-> Boa.defineProperty 'clientTop', (e) -> e.getBoundingClientRect().top)
+      .should.throw Error
+
+describe 'Custom Transformations', ->
+  it 'should allow custom transform definitions', ->
+    Boa.defineTransform.should.exist.and.be.a 'function'
+    Boa.defineTransform
+      .should.throw Error
+    (-> Boa.defineTransform 345, (v, a) -> Math.pow(v,a))
+      .should.throw Error
+    (-> Boa.defineTransform 'exponent', 54)
+      .should.throw Error
+    (-> Boa.defineTransform 'plus', (v, a) -> v + a)
+      .should.throw Error
+    (-> Boa.defineTransform 'exponent', (v, a) -> Math.pow(v,a))
+      .should.not.throw Error
+  it 'should still return a source', ->
+    source = Boa.source('#transform-test', 'width')
+    transformed = source.plus 5
+    transformed.should.be.an.instanceof Boa.Source
+  it 'should have some predefined transforms', ->
+    Boa.Source.prototype.plus.should.exist.and.be.a 'function'
+    Boa.Source.prototype.minus.should.exist.and.be.a 'function'
+    Boa.Source.prototype.times.should.exist.and.be.a 'function'
+    Boa.Source.prototype.dividedBy.should.exist.and.be.a 'function'
+    Boa.Source.prototype.mod.should.exist.and.be.a 'function'
+    div = document.createElement 'div'
+    div.id = 'transform-test'
+    div.style.width = '40px'
+    document.body.appendChild div
+    source = Boa.source('#transform-test', 'width')
+    plusTest = source.plus 5
+    plusTest.value().should.equal '45px'
+    minusTest = source.minus 5
+    minusTest.value().should.equal '35px'
+    timesTest = source.times 5
+    timesTest.value().should.equal '200px'
+    dividedByTest = source.dividedBy 5
+    dividedByTest.value().should.equal '8px'
+    modTest = source.mod 5
+    modTest.value().should.equal '0px'
+    document.body.removeChild div
+  it 'should be chainable', ->
+    div = document.createElement 'div'
+    div.id = 'transform-test'
+    div.style.width = '40px'
+    document.body.appendChild div
+    source = Boa.source('#transform-test', 'width')
+    source.plus(5).times(2).value().should.equal '90px'
+    document.body.removeChild div
+  it 'should accept other sources as input', ->
+    div = document.createElement 'div'
+    div.id = 'transform-test'
+    div.style.width = '40px'
+    div.style.height = '20px'
+    document.body.appendChild div
+    source = Boa.source('#transform-test', 'width')
+    source2 = Boa.source('#transform-test', 'height')
+    source.plus(source2).value().should.equal '60px'
+    document.body.removeChild div
