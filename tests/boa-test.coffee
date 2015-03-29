@@ -1,4 +1,4 @@
-async = (f) -> setTimeout f, 10
+async = (f) -> setTimeout f, 0
 
 describe 'Boa', ->
   it 'should exist', ->
@@ -8,16 +8,15 @@ describe 'Boa', ->
   it 'should have appended a style element into the document head', ->
     Boa._style.should.exist
     Boa._style.parentNode.should.equal document.head
-  # this test fails in Firefox. not sure why, but it's mostly duplicating
-  # tests below.
-  #it 'should be listening for DOM mutations', (done) ->
-    #sinon.spy Boa, '_handleMutation'
-    #div = document.createElement 'div'
-    #document.body.appendChild div
-    #document.body.removeChild div
-    #async ->
-      #Boa._handleMutation.should.have.been.calledTwice
-      #done()
+  it 'should be listening for DOM mutations', (done) ->
+    sinon.spy Boa, '_handleMutation'
+    div = document.createElement 'div'
+    async ->
+      document.body.appendChild div
+      document.body.removeChild div
+      async ->
+        Boa._handleMutation.should.have.been.calledTwice
+        done()
   it 'should allow custom property definitions', ->
     Boa.defineProperty.should.exist.and.be.a 'function'
     Boa.defineProperty
