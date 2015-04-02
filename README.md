@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/skeate/boa.png?label=ready&title=Ready)](https://waffle.io/skeate/boa)
 ![Travis CI Status](https://travis-ci.org/skeate/boa.svg?branch=master)
 [![Coverage Status](https://coveralls.io/repos/skeate/boa/badge.svg)](https://coveralls.io/r/skeate/boa)
 [![Dev Status](https://david-dm.org/skeate/boa/dev-status.svg)](https://david-dm.org/skeate/boa#info=devDependencies&view=table)
