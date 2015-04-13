@@ -215,6 +215,77 @@ var deunitify = function(f) {
   };
 };
 
+var toHSL = function(c) {
+  var r = c.r / 255;
+  var g = c.g / 255;
+  var b = c.b / 255;
+  var xmax = Math.max(r, g, b);
+  var xmin = Math.min(r, g, b);
+  var l = (xmax + xmin) / 2;
+  var s = (xmax === xmin) ? 0 :
+          (l < 0.5 ? (xmax - xmin) / (xmax + xmin) :
+          (xmax - xmin) / (2 - xmax - xmin));
+  var h = (r === xmax) ? 0 + (g - b) / (xmax - xmin) :
+          (g === xmax) ? 2 + (b - r) / (xmax - xmin) :
+          (b === xmax) * 4 + (r - g) / (xmax - xmin) ;
+  if (h < 0) { h = h + 6; }
+  h *= 60; // convert to degrees
+  return {h:h, s:s, l:l, a: c.a};
+};
+
+var toRGB = function(c) {
+  if (c.s === 0) {
+    var l = Math.floor(c.l * 255);
+    return {r: l, g: l, b: l};
+  }
+  var temp2 = (c.l < 0.5) ? c.l * (1 + c.s) : (c.l + c.s - c.l * c.s);
+  var temp1 = 2 * c.l - temp2;
+  var h = c.h / 360;
+  var temp3;
+  function getColor(temp1, temp2, temp3) {
+    return Math.floor(255 * (
+      temp3 < 1 / 6 ? temp1 + (temp2 - temp1) * 6 * temp3 :
+      temp3 < 1 / 2 ? temp2 :
+      temp3 < 2 / 3 ? temp1 + (temp2 - temp1) * 6 * (2 / 3 - temp3) :
+      temp1
+    ));
+  }
+  temp3 = h + 1 / 3;
+  if (temp3 > 1) { temp3--; }
+  var r = getColor(temp1, temp2, temp3);
+  var g = getColor(temp1, temp2, h);
+  temp3 = h - 1 / 3;
+  if (temp3 < 0) { temp3++; }
+  var b = getColor(temp1, temp2, temp3);
+  return {r:r, g:g, b:b, a:c.a};
+};
+
+var toRGBString = function(c) {
+  return 'rgb' + ((c.a) ? 'a' : '') + '(' +
+    c.r + ', ' +
+    c.g + ', ' +
+    c.b +
+    (c.a ? ', ' + c.a : '') +
+    ')';
+};
+
+var objectifyColor = function(f) {
+  return function(v, a) {
+    var tmp = /^rgba?\((\d+), (\d+), (\d+)(, (1|0|0.\d+))?\)$/.exec(v);
+    var rgb = {
+      r: tmp[1],
+      g: tmp[2],
+      b: tmp[3],
+      a: tmp[5]
+    };
+    return f({
+      rgb: rgb,
+      hsl: toHSL(rgb)
+    }, a);
+  };
+};
+
+// math
 Boa.defineTransform('plus', deunitify(function(v, a) {
   return v + a;
 }));
@@ -229,6 +300,23 @@ Boa.defineTransform('dividedBy', deunitify(function(v, a) {
 }));
 Boa.defineTransform('mod', deunitify(function(v, a) {
   return v % a;
+}));
+
+// colors
+Boa.defineTransform('lighten', objectifyColor(function(v, a) {
+  var c = v.hsl;
+  c.l = Math.min(1, c.l + a);
+  return toRGBString(toRGB(c));
+}));
+Boa.defineTransform('darken', objectifyColor(function(v, a) {
+  var c = v.hsl;
+  c.l = Math.max(0, c.l - a);
+  return toRGBString(toRGB(c));
+}));
+Boa.defineTransform('shiftHue', objectifyColor(function(v, a) {
+  var c = v.hsl;
+  c.h = (c.h + a) % 360;
+  return toRGBString(toRGB(c));
 }));
 
 Boa.init();

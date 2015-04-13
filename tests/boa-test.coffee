@@ -141,11 +141,6 @@ describe 'Custom Properties', ->
       .should.not.throw Error
     (-> Boa.defineProperty 'testProp', (e) -> e.value)
       .should.throw Error
-  it 'should predefine some custom properties', ->
-    (-> Boa.defineProperty 'clientLeft', (e) -> e.getBoundingClientRect().left)
-      .should.throw Error
-    (-> Boa.defineProperty 'clientTop', (e) -> e.getBoundingClientRect().top)
-      .should.throw Error
 
 describe 'Custom Transformations', ->
   it 'should allow custom transform definitions', ->
@@ -164,28 +159,6 @@ describe 'Custom Transformations', ->
     source = Boa.source('#transform-test', 'width')
     transformed = source.plus 5
     transformed.should.be.an.instanceof Boa.Source
-  it 'should have some predefined transforms', ->
-    Boa.Source.prototype.plus.should.exist.and.be.a 'function'
-    Boa.Source.prototype.minus.should.exist.and.be.a 'function'
-    Boa.Source.prototype.times.should.exist.and.be.a 'function'
-    Boa.Source.prototype.dividedBy.should.exist.and.be.a 'function'
-    Boa.Source.prototype.mod.should.exist.and.be.a 'function'
-    div = document.createElement 'div'
-    div.id = 'transform-test'
-    div.style.width = '40px'
-    document.body.appendChild div
-    source = Boa.source('#transform-test', 'width')
-    plusTest = source.plus 5
-    plusTest.value().should.equal '45px'
-    minusTest = source.minus 5
-    minusTest.value().should.equal '35px'
-    timesTest = source.times 5
-    timesTest.value().should.equal '200px'
-    dividedByTest = source.dividedBy 5
-    dividedByTest.value().should.equal '8px'
-    modTest = source.mod 5
-    modTest.value().should.equal '0px'
-    document.body.removeChild div
   it 'should be chainable', ->
     div = document.createElement 'div'
     div.id = 'transform-test'
@@ -203,4 +176,68 @@ describe 'Custom Transformations', ->
     source = Boa.source('#transform-test', 'width')
     source2 = Boa.source('#transform-test', 'height')
     source.plus(source2).value().should.equal '60px'
+    document.body.removeChild div
+
+describe 'Predefined Properties', ->
+  it 'should predefine some custom properties', ->
+    (-> Boa.defineProperty 'clientLeft', (e) -> e.getBoundingClientRect().left)
+      .should.throw Error
+    (-> Boa.defineProperty 'clientTop', (e) -> e.getBoundingClientRect().top)
+      .should.throw Error
+
+describe 'Predefined Transforms', ->
+  div = null
+  before ->
+    div = document.createElement 'div'
+    div.id = 'transform-test'
+    div.style.width = '40px'
+    div.style.backgroundColor = '#accede'
+    div.style.color = 'rgba(136, 136, 136, .5)'
+    document.body.appendChild div
+  describe 'Math', ->
+    source = null
+    before ->
+      source = Boa.source('#transform-test', 'width')
+    it 'should include plus', ->
+      Boa.Source.prototype.plus.should.exist.and.be.a 'function'
+      plusTest = source.plus 5
+      plusTest.value().should.equal '45px'
+    it 'should include minus', ->
+      Boa.Source.prototype.minus.should.exist.and.be.a 'function'
+      minusTest = source.minus 5
+      minusTest.value().should.equal '35px'
+    it 'should include times', ->
+      Boa.Source.prototype.times.should.exist.and.be.a 'function'
+      timesTest = source.times 5
+      timesTest.value().should.equal '200px'
+    it 'should include divided by', ->
+      Boa.Source.prototype.dividedBy.should.exist.and.be.a 'function'
+      dividedByTest = source.dividedBy 5
+      dividedByTest.value().should.equal '8px'
+    it 'should include mod', ->
+      Boa.Source.prototype.mod.should.exist.and.be.a 'function'
+      modTest = source.mod 5
+      modTest.value().should.equal '0px'
+  describe 'Color', ->
+    source = source2 = null
+    before ->
+      source = Boa.source('#transform-test', 'background-color')
+      source2 = Boa.source('#transform-test', 'color')
+    it 'should include lighten', ->
+      Boa.Source.prototype.lighten.should.exist.and.be.a 'function'
+      lightenTest = source.lighten .2
+      lightenTest.value().should.equal 'rgb(244, 249, 251)'
+      lightenTest2 = source2.lighten .2
+      lightenTest2.value().should.equal 'rgb(187, 187, 187)'
+    it 'should include darken', ->
+      Boa.Source.prototype.darken.should.exist.and.be.a 'function'
+      darkenTest = source.darken .2
+      darkenTest.value().should.equal 'rgb(99, 162, 192)'
+      darkenTest2 = source2.darken .2
+      darkenTest2.value().should.equal 'rgb(85, 85, 85)'
+    it 'should include hue shifts', ->
+      Boa.Source.prototype.shiftHue.should.exist.and.be.a 'function'
+      hueShiftTest = source.shiftHue 45
+      hueShiftTest.value().should.equal 'rgb(175, 172, 222)'
+  after ->
     document.body.removeChild div
