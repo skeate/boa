@@ -26,6 +26,13 @@ var Boa = {
   },
 
   _handleMutation: function(mutation) {
+    if (mutation.type === 'childList') {
+      this._bindings.forEach(function(binding) {
+        if (binding.source.listens) {
+          binding._apply();
+        }
+      })
+    }
     var changedEl = mutation.target;
     this._bindings.forEach(function(binding) {
       /* istanbul ignore else */
@@ -93,14 +100,17 @@ var Boa = {
     return this._sources[combined];
   },
 
-  defineProperty: function(property, func) {
-    if (arguments.length !== 2) {
+  defineProperty: function(property, listenToChildList, func) {
+    if (arguments.length !== 3) {
       throw new Error('Incorrect number of arguments to defineProperty');
     }
     if (this._properties.hasOwnProperty(property)) {
       throw new Error('Property already exists');
     }
-    this._properties[property] = func;
+    this._properties[property] = {
+      f: func,
+      listen: listenToChildList
+    };
   },
 
   defineTransform: function(name, func) {
@@ -137,6 +147,10 @@ Boa.Source = function(selector, property) {
   if (parsed) {
     this._custom = parsed[2];
     this.property = parsed[3];
+    var p = Boa._properties[this.property];
+    if (p) {
+      this.listens = Boa._properties[this.property].listen;
+    }
   } else {
     throw new Error('unable to parse property');
   }
@@ -156,7 +170,7 @@ Boa.Source.prototype.bindTo = function(selector, property) {
 Boa.Source.prototype.value = function() {
   var element = document.querySelector(this.selector);
   if (this._custom) {
-    return Boa._properties[this.property](element);
+    return Boa._properties[this.property].f(element);
   }
   return window.getComputedStyle(element).getPropertyValue(this.property);
 };
@@ -183,11 +197,11 @@ Boa.Binding.prototype._apply = function() {
   });
 };
 
-Boa.defineProperty('clientLeft', function(e) {
-  return e.getBoundingClientRect().left;
+Boa.defineProperty('clientLeft', true, function(e) {
+  return e.getBoundingClientRect().left + 'px';
 });
-Boa.defineProperty('clientTop', function(e) {
-  return e.getBoundingClientRect().top;
+Boa.defineProperty('clientTop', true, function(e) {
+  return e.getBoundingClientRect().top + 'px';
 });
 
 var splitValueUnit = function(val) {

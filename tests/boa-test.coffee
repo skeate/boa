@@ -58,10 +58,10 @@ describe 'Boa.Source', ->
     document.body.appendChild div
     Boa.source '.test', 'boa:clientLeft'
       .value()
-      .should.equal 40
+      .should.equal '40px'
     Boa.source '.test', 'boa:clientTop'
       .value()
-      .should.equal 20
+      .should.equal '20px'
 
   describe 'Boa.Source#bindTo', ->
     div1 = div2 = null
@@ -137,10 +137,28 @@ describe 'Custom Properties', ->
     Boa.defineProperty.should.exist.and.be.a 'function'
     Boa.defineProperty
       .should.throw Error
-    (-> Boa.defineProperty 'testProp', (e) -> e.value)
+    (-> Boa.defineProperty 'testProp', true, (e) -> e.value)
       .should.not.throw Error
-    (-> Boa.defineProperty 'testProp', (e) -> e.value)
+    (-> Boa.defineProperty 'testProp', true, (e) -> e.value)
       .should.throw Error
+  it 'should trigger updates on add/remove DOM elements', (done) ->
+    div = document.createElement 'div'
+    div.id = 'reflow-test'
+    document.body.appendChild div
+    extra = document.createElement 'div'
+    extra.innerHTML = 'test'
+    source = Boa.source '#reflow-test', 'boa:clientTop'
+    source.bindTo '#reflow-test', 'margin-left'
+    before = source.value()
+    document.body.insertBefore extra, div
+    async ->
+      debugger
+      after = source.value()
+      before.should.not.equal after
+      getComputedStyle div
+        .getPropertyValue 'margin-left'
+        .should.equal after
+      done()
 
 describe 'Custom Transformations', ->
   it 'should allow custom transform definitions', ->
@@ -180,9 +198,9 @@ describe 'Custom Transformations', ->
 
 describe 'Predefined Properties', ->
   it 'should predefine some custom properties', ->
-    (-> Boa.defineProperty 'clientLeft', (e) -> e.getBoundingClientRect().left)
+    (-> Boa.defineProperty 'clientLeft', true, (e) -> e.getBoundingClientRect().left)
       .should.throw Error
-    (-> Boa.defineProperty 'clientTop', (e) -> e.getBoundingClientRect().top)
+    (-> Boa.defineProperty 'clientTop', true, (e) -> e.getBoundingClientRect().top)
       .should.throw Error
 
 describe 'Predefined Transforms', ->
