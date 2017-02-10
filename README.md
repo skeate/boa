@@ -10,6 +10,8 @@
 
 # boa
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/skeate/boa.svg)](https://greenkeeper.io/)
+
 Reactive stylesheet JS library (and eventually language).
 
 ## Usage
